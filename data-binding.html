@@ -1,27 +1,36 @@
 <html>
+<head>
+  <title>Fragments.js</title>
+  <meta name="description" content="JavaScript fragments/snippets for easy reuse"/>
+  <meta name="keywords" content="JavaScript, HTML5, webapps, web development"/>
+  <meta charset='utf-8' />
+  <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
 <body>
+<div class='centered'>
 
-<h1>Data binding</h1>
+  <h1>Data binding</h1>
 
-Data binding is a method for automatically reflecting changes in an object in the
-gui. This reduces the amount of coding needed in many situations. Design patterns
-like MVC (Model-View-Controller) and MVVM (Model-View-Viewmodel).
+  Data binding is a method for automatically reflecting changes in an object in the
+  gui. This reduces the amount of coding needed in many situations. Design patterns
+  like MVC (Model-View-Controller) and MVVM (Model-View-Viewmodel).
 
-It is actually simpler that you might think to roll this on your own.
-Here is an example where JavaScript setters are used. All the user has to do
-is to add the extra attribute <code>data-bind='property name'</code> to the DOM elements
-you need,  call <code>createUIObject</code> and voilá an object with the specified properties
-is created.
+  It is actually simpler that you might think to roll this on your own.
+  Here is an example where JavaScript setters are used. All the user has to do
+  is to add the extra attribute <code>data-bind='property name'</code> to the DOM elements
+  you need,  call <code>createUIObject</code> and voilá an object with the specified properties
+  is created.
 
-<a href='examples/data-binding.html'>Here is an example</a> (make sure
-to show the developer console).
+  <a href='examples/data-binding.html'>Here is an example</a> (make sure
+  to show the developer console).
 
-<h2>Alternative solutions</h2>
+  <h2>Alternative solutions</h2>
 
-  <ul>
-    <li><a href='http://knockoutjs.com'>Knockout</a></li>
-    <li><a href='https://angularjs.org'>Anglular</a></li>
-  </ul>
+    <ul>
+      <li><a href='http://knockoutjs.com'>Knockout</a></li>
+      <li><a href='https://angularjs.org'>Anglular</a></li>
+    </ul>
 
+</div>
 </body>
 </hyml>
