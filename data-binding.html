@@ -9,27 +9,38 @@
 <body>
 <div class='centered'>
 
-  <h1>Data binding</h1>
+<h1>Data binding</h1>
 
-  Data binding is a method for automatically reflecting changes in an object in the
-  gui. This reduces the amount of coding needed in many situations. Design patterns
-  like MVC (Model-View-Controller) and MVVM (Model-View-Viewmodel).
+<p>Data binding is a method for automatically reflecting changes in an object in the
+gui. This reduces the amount of coding needed in many situations. Design patterns
+like MVC (Model-View-Controller) and MVVM (Model-View-Viewmodel) are often used
+in combination with data binding.</p>
 
-  It is actually simpler that you might think to roll this on your own.
-  Here is an example where JavaScript setters are used. All the user has to do
-  is to add the extra attribute <code>data-bind='property name'</code> to the DOM elements
-  you need,  call <code>createUIObject</code> and voilá an object with the specified properties
-  is created.
+<p>It is actually simpler that you might think to roll this on your own.
+Here is an example where JavaScript setters are used. All the user has to do
+is to add the extra attribute <code>data-bind='property name'</code> to
+the DOM elements you need,  call <code>createUIObject</code> and voilá an
+object with the specified properties is created.<p>
 
-  <a href='examples/data-binding.html'>Here is an example</a> (make sure
-  to show the developer console).
+<p><a href='src/data-binding.html'>Here is the source</a> (make sure
+to show the developer console).</p>
 
-  <h2>Alternative solutions</h2>
+<h2>Compability</h2>
 
-    <ul>
-      <li><a href='http://knockoutjs.com'>Knockout</a></li>
-      <li><a href='https://angularjs.org'>Anglular</a></li>
-    </ul>
+<ul>
+  <li>Property <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects#Defining_getters_and_setters'>
+  setters and gettes</a> are used. Works with IE9, Safari5, FF4, Chrome5 and
+  Opera12  according to
+  <a href='http://javascriptplayground.com/blog/2013/12/es5-getters-setters/'>
+  this site</a>.</li>
+</ul>
+
+<h2>Alternative solutions</h2>
+
+  <ul>
+    <li><a href='http://knockoutjs.com'>Knockout</a></li>
+    <li><a href='https://angularjs.org'>Anglular</a></li>
+  </ul>
 
 </div>
 </body>
