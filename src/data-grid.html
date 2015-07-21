@@ -1,0 +1,131 @@
+<html>
+
+<body>
+
+  <table id='table' width='80%' border=0 data-grid='rows=13,cols=13'>
+    <tr>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Gender</th>
+    </tr>
+  </table>
+
+  <input type='button' id='reset' value='reset' />
+  <input type='button' id='increase' value='increase' />
+  <input type='button' id='print' value='print' />
+
+  <script>
+    // workaround since NodeList do not inherit Array (not for IE6/7/8)
+    NodeList.prototype.forEach = Array.prototype.forEach;
+    NamedNodeMap.prototype.forEach = Array.prototype.forEach;
+
+    var mergeArray = function (arr) {
+      return arr.reduce(function (prev, curr, idx, arr) {
+        return merge(prev, curr);
+      }, {});
+    }
+
+    var merge = function (source, target) {
+      if (source === undefined)
+        source = {};
+      if (target === undefined)
+        target = {};
+      for (var key in source) {
+        if (source.hasOwnProperty(key)) {
+          target[key] = source[key];
+        }
+      }
+      return target;
+    };
+
+    var parseNodeAttr = function (node, attrName) {
+      var props = null;
+      if (node.attributes) {
+        node.attributes.forEach(function (attr) {
+          if (attr.name && attr.name === attrName) {
+            props = mergeArray(attr.value.split(',')
+              .map(function (el) {
+                var p = el.split('=');
+                var r = {};
+                r[p[0]] = p[1];
+                return r;
+              }));
+          }
+        });
+      }
+      return props;
+    }
+
+    var createTable = function (table, events, eventCb) {
+      var tblBody = table.tBodies[0];
+      if (!tblBody) {
+        tblBody = document.createElement('tbody');
+        table.appendChild(tblBody);
+      }
+
+      events.forEach(function(evt){
+        table.addEventListener(evt, eventCb);
+      })
+
+      var props = parseNodeAttr(table, 'data-grid');
+      for (var i = 0; i < props.rows; i++) {
+        var row = document.createElement('tr');
+        for (var j = 0; j < props.cols; j++) {
+          var cell = document.createElement('td');
+          cell.row = i;
+          cell.col = j;
+          cell.innerHTML = '11';
+          row.appendChild(cell);
+        }
+        tblBody.appendChild(row);
+      }
+
+      // A little syntactic sugar, not really necessaey:
+      // can just do table.rows[i].cells[j]
+      var t = function (row, col, val) {
+        if (val !== undefined) table.rows[row].cells[col].innerHTML = val;
+        return table.rows[row].cells[col].innerHTML;
+      };
+
+      t.rows = props.rows;
+      t.cols = props.cols;
+      t.forEach = function(cb){
+        for (var i = 0; i < table.rows.length; i++) {
+          for (var j = 0; j < table.rows[i].cells.length; j++) {
+            cb(i, j, cell);
+          }
+        }
+      };
+
+      return t;
+    };
+
+    document.addEventListener('DOMContentLoaded', function (e) {
+      var table = createTable(document.getElementById('table'), ['click'],
+        console.log.bind(console));
+
+      document.getElementById('increase').addEventListener('click', function () {
+        table.forEach(function(row, col) {
+          table(row, col, table(row, col)+'11')
+        });
+      });
+
+      document.getElementById('reset').addEventListener('click', function () {
+        table.forEach(function(row, col) {
+          table(row, col, '11')
+        });
+      });
+
+      document.getElementById('print').addEventListener('click', function () {
+        console.log('rows:',table.rows, 'cols:', table.cols);
+        table.forEach(function(row, col) {
+          console.log(table(row, col));
+        });
+      });
+
+    });
+  </script>
+
+</body>
+
+</html>
