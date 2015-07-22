@@ -1,0 +1,58 @@
+<html>
+
+<body>
+
+  pushState update the URL hash but do not trigger any event.
+  <br/>
+  <input type='button' value='page1' id='page1' />
+  <input type='button' value='page2' id='page2' />
+  <br/>
+  </br/> links updates the URL hash and also triggers an event.</br>
+  <a href='#page1'>page1</a>
+  <a href='#page2'>page2</a></br>
+
+  <hr/> Open the console to view the details.
+
+  <script>
+    var route = function (evt) {
+      console.log(evt);
+      var parser = document.createElement('a');
+      parser.href = evt.newURL;
+      console.log(parser.protocol,
+        parser.hostname,
+        parser.port,
+        parser.pathname,
+        parseQueryString(parser.search),
+        parser.hash,
+        parser.host);
+    }
+
+    // use this if you need to parse the query/search string
+    var parseQueryString = function (str) {
+        return str.substring(1).split('&')
+            .map(function(s){
+                return s.split('=');
+            })
+            .reduce(function (r, x) {
+                r[x[0]] = x[1];
+                return r;
+            }, {});
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('page1').addEventListener('click',
+        function (evt) {
+          history.pushState(null, null, '#page1');
+        });
+
+      document.getElementById('page2').addEventListener('click',
+        function (evt) {
+          history.pushState(null, null, '#page2');
+        });
+
+      window.addEventListener('hashchange', route, false);
+    });
+  </script>
+</body>
+
+</html>
