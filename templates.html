@@ -1,0 +1,51 @@
+<html>
+<head>
+  <title>Fragments.js</title>
+  <meta name="description" content="JavaScript fragments/snippets for easy reuse"/>
+  <meta name="keywords" content="JavaScript, HTML5, webapps, web development"/>
+  <meta charset='utf-8' />
+  <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+<body>
+<div class='centered'>
+
+<p><a href='index.html'>Home</a></p>
+
+<h1>Templates</h1>
+
+<p>It is fairly easy to roll your own template solution. You just need to traverse
+the DOM and replaces string with a specific prefix and suffix, for instance
+<code>{{</code> and <code>}}</code> with some other string.</p>
+
+<p><a href='src/templates.html'>Here is an example</a> (make sure
+to show the developer console).</p>
+
+
+<h2>Compability</h2>
+
+This implementation does not work in IE6/7/8 due to the the enhancement
+of <code>NodeList</code> and <code>NamedNodeMap</code>. It can easily be changed
+into for loops if support for IE6/7/8 is required.
+
+<code><pre>
+NodeList.prototype.forEach = Array.prototype.forEach;
+NamedNodeMap.prototype.forEach = Array.prototype.forEach;
+</pre></code>
+
+<h2>Alternative solutions</h2>
+
+There are many libraries that provides templates. Mustache is one of the best
+known.
+
+<ul>
+  <li><a href='https://mustache.github.io'>Mustache</a></li>
+
+  <li><a href='http://underscorejs.org'>Underscore</a> - this is a good library
+  that also provides support for the functional progamming style for old
+  broswers</li>
+
+</ul>
+
+</div>
+</body>
+</hyml>
