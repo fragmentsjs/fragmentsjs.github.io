@@ -4,6 +4,6 @@ TODO
 * Load HTML, JS and CSS dynamically
 * IndexedDb and data binding
 * Custom Events
-* Promises
+* Promises - http://www.mattgreer.org/articles/promises-in-wicked-detail/
 * Gör om sidan till SinglePage, länka inom dokumentet med # (som gizur.com)
 * Fixa snygg CSS
