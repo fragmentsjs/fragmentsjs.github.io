@@ -1,0 +1,28 @@
+<!-- See db.js for instructions on howto run --> 
+
+<html lang="en">
+<head>
+  <title>tests</title>
+  <link rel="stylesheet" href="./bower_components/mocha/mocha.css">
+</head>
+<body>
+  <div id="mocha"></div>
+
+  <!-- Test libraries -->
+  <script src="./bower_components/mocha/mocha.js"></script>
+
+  <!-- Initialize mocha -->
+  <script>
+    mocha.setup('bdd');
+  </script>
+
+  <!-- The tests-->
+  <script src="./bundle.js"></script>
+
+  <!-- Start the tests -->
+  <script>
+    mocha.run();
+  </script>
+
+</body>
+</html>

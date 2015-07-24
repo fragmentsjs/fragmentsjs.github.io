@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+
+  <style type="text/gss">
+    /* This will position the image to be in the center of the window! That's easy! */
+    #mytable[center] == ::window[center];
+
+    /* Get the size of the h1 and p tags using their intrinsic size */
+    #mytable[size] == #mytable[intrinsic-size];
+    h1[size] == h1[intrinsic-size];
+    p[size] == p[intrinsic-size];
+
+    /* VFL to vertically align the elements */
+    @v (h1)-30-(#mytable)-20-(p);
+
+    /* Horizontally align the h1 and p with the image */
+    h1[center-x] == p[center-x] == #mytable[center-x];
+  </style>
+
+  <style>
+      @import "http://fonts.googleapis.com/css?family=Montserrat:300,400,700";
+      .rwd-table {
+        margin: 1em 0;
+        min-width: 300px;
+      }
+      .rwd-table tr {
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+      }
+      .rwd-table th {
+        display: none;
+      }
+      .rwd-table td {
+        display: block;
+      }
+      .rwd-table td:first-child {
+        padding-top: .5em;
+      }
+      .rwd-table td:last-child {
+        padding-bottom: .5em;
+      }
+      .rwd-table td:before {
+        content: attr(data-th) ": ";
+        font-weight: bold;
+        width: 6.5em;
+        display: inline-block;
+      }
+      @media (min-width: 480px) {
+        .rwd-table td:before {
+          display: none;
+        }
+      }
+      .rwd-table th,
+      .rwd-table td {
+        text-align: left;
+      }
+      @media (min-width: 480px) {
+        .rwd-table th,
+        .rwd-table td {
+          display: table-cell;
+          padding: .25em .5em;
+        }
+        .rwd-table th:first-child,
+        .rwd-table td:first-child {
+          padding-left: 0;
+        }
+        .rwd-table th:last-child,
+        .rwd-table td:last-child {
+          padding-right: 0;
+        }
+      }
+      body {
+        padding: 0 2em;
+        font-family: Montserrat, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        color: #444;
+        background: #eee;
+      }
+      h1 {
+        font-weight: normal;
+        letter-spacing: -1px;
+        color: #34495E;
+      }
+      .rwd-table {
+        background: #34495E;
+        color: #fff;
+        border-radius: .4em;
+        overflow: hidden;
+      }
+      .rwd-table tr {
+        border-color: #46627f;
+      }
+      .rwd-table th,
+      .rwd-table td {
+        margin: .5em 1em;
+      }
+      @media (min-width: 480px) {
+        .rwd-table th,
+        .rwd-table td {
+          padding: 1em !important;
+        }
+      }
+      .rwd-table th,
+      .rwd-table td:before {
+        color: #dd5;
+      }
+    </style>
+</head>
+
+<body>
+
+  <h1>Editable Table</h1>
+  <table class="rwd-table" id='mytable'>
+    <tr><td span='4'>Filter:</td></tr>
+    <tr>
+      <td contenteditable id='search1'>*</td>
+      <td contenteditable id='search2'>*</td>
+      <td contenteditable id='search3'>*</td>
+      <td contenteditable id='search4'>*</td>
+    </tr>
+    <tr><td span='4'>Sort:</td></tr>
+    <tr>
+      <td contenteditable id='sort1'>asc</td>
+      <td contenteditable id='sort2'></td>
+      <td contenteditable id='sort3'></td>
+      <td contenteditable id='sort4'></td>
+    </tr>
+    <tr>
+      <th>Movie Title</th>
+      <th>Genre</th>
+      <th>Year</th>
+      <th>Gross</th>
+    </tr>
+    <tr id='row1'>
+      <td contenteditable id='col11'h>Star Wars</td>
+      <td contenteditable id='col12'>Adventure, Sci-fi</td>
+      <td contenteditable id='col13'>1977</td>
+      <td contenteditable id='col14'>$460,935,665</td>
+    </tr>
+    <tr id='row2'>
+      <td contenteditable id='col21'>I'm editable. Howard The Duck</td>
+      <td contenteditable id='col22'>"Comedy"</td>
+      <td contenteditable id='col23'>1986</td>
+      <td contenteditable id='col24'>$16,295,774</td>
+    </tr>
+    <tr id='row3'>
+      <td contenteditable id='col31'>American Graffiti</td>
+      <td contenteditable id='col32'>Comedy, Drama</td>
+      <td contenteditable id='col33'>1973</td>
+      <td contenteditable id='col34'>$115,000,000</td>
+    </tr>
+  </table>
+
+  <p>Double click on a cell to edit it's contents.<br/>
+  &larr; Drag window (in editor or full page view) to see the effect. &rarr;</p>
+
+
+  <script>
+    var log = function(msg) {
+      console.log(msg);
+    }
+
+    var elWithFocus = null;
+    var handleEvent = function(evt) {
+      var el = document.getElementById(evt.target.id);
+      switch(evt.type) {
+        case 'input':
+          var val = el.innerHTML;
+          log('event with target: ' + evt.target.id
+                      + ', value: ' + val
+                      + ', type: ' + evt.type
+                      + ' (bubbles: ' + evt.bubbles
+                      + ', cancelable: ' + evt.cancelable + ')' );
+
+          log('Parent node: ' + evt.target.parentNode);
+          break;
+
+        case 'focusout':
+          log('new el got focus. now active: ' + document.activeElement +
+              ', id for focusout: ' + el.id);
+          break;
+      }
+    };
+
+    log('start of script');
+    window.addEventListener('input', handleEvent, false);
+    window.addEventListener('focusout', handleEvent, false);
+
+  </script>
+
+  <script src="https://s3-us-west-2.amazonaws.com/cdn.thegrid.io/gss/v2.0.0/v2.0.0/gss.js"></script>
+  <script type="text/javascript">
+    /* you can see what is going on in the engine with console.log(window.engine) */
+    window.engine = new GSS(document);
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+<body>
+  <h1>Main window</h1>
+  <input type='button' id='button1' value='click me' />
+  <br/>
+
+  <script>
+    dispatchEvent = function(el, eventName, message) {
+
+      var event = new CustomEvent(
+        eventName, {
+          detail: {
+            message: message,
+            time: new Date(),
+          },
+          bubbles: true,
+          cancelable: true
+        }
+      );
+
+      el.dispatchEvent(event);
+    };
+
+    var handler = function(evt) {
+      console.log('EVENT IN TOP WINDOW');
+      console.log(evt);
+
+      if(evt instanceof MouseEvent) {
+        console.log("CLICK IN TOP WINDOW");
+
+        var frame = document.getElementById('frame');
+        dispatchEvent(frame.contentDocument, 'myEvent', 'button clicked in top window');
+      }
+
+      if(evt.type === 'myEvent') {
+        console.log('CUSTOM EVENT: ' + evt.detail.message);
+      }
+
+    };
+
+    var init = function() {
+      console.log('init top window');
+      document.addEventListener('click', handler);
+      document.addEventListener('myEvent', handler);
+    };
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+      console.log('DOMContentLoaded');
+      init();
+    });
+
+
+  </script>
+
+  <iframe src='frame.html' id='frame' sandbox='allow-scripts allow-same-origin' />
+
+</body>
+
+</html>

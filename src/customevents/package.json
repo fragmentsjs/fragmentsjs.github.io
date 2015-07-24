@@ -1,0 +1,25 @@
+{
+  "name": "gna",
+  "version": "0.0.1",
+  "description": "Test Karma and triggerning events between frames",
+  "main": "test.js",
+  "private": false,
+  "author": "jonas@gizur.com",
+  "license": "Propriatary",
+  "devDependencies": {
+    "chai": "*",
+    "del": "*",
+    "mocha": "*",
+    "karma": "*",
+    "karma-chai": "*",
+    "karma-chrome-launcher": "*",
+    "karma-firefox-launcher": "*",
+    "karma-mocha": "*",
+    "karma-safari-launcher": "*",
+    "karma-sauce-launcher": "*"
+  },
+  "scripts": {
+    "clean": "rm -rf build",
+    "test": "./node_modules/karma/bin/karma start"
+  }
+}

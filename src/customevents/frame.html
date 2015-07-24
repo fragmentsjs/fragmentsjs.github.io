@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<body>
+  <h1>Frame</h1>
+  <p>open the console</p>
+  <input type='button' id='button2' value='click me'/>
+
+  <script>
+    dispatchEvent = function(el, eventName, message) {
+
+      var event = new CustomEvent(
+        eventName, {
+          detail: {
+            message: message,
+            time: new Date(),
+          },
+          bubbles: true,
+          cancelable: true
+        }
+      );
+
+      el.dispatchEvent(event);
+    };
+
+    var handler = function(evt) {
+      console.log('EVENT IN FRAME');
+      console.log(evt);
+      
+      if(evt instanceof MouseEvent) {
+        console.log('CLICK IN FRAME');
+        dispatchEvent(parent.document, 'myEvent', 'click in iframe');
+      }
+
+      if(evt.type === 'myEvent') {
+        console.log('CUSTOM EVENT: ' + evt.detail.message);
+      }
+
+    };
+
+    var init = function() {
+      console.log('init frame');
+
+      document.addEventListener('click', handler);
+      document.addEventListener('myEvent', handler);
+    };
+
+    document.addEventListener("DOMContentLoaded", init);
+
+  </script>
+</body>
+</html>
