@@ -1,0 +1,57 @@
+<html>
+<head>
+  <title>Fragments.js</title>
+  <meta name="description" content="JavaScript fragments/snippets for easy reuse"/>
+  <meta name="keywords" content="JavaScript, HTML5, webapps, web development"/>
+  <meta charset='utf-8' />
+  <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+<body>
+<div class='centered'>
+
+<p><a href='index.html'>Home</a></p>
+
+<h1>Streams</h1>
+
+<p>Reactive programming is a concept for managing asynchronous events and streams.
+The streams are transformed from one stream into antoher using functions that
+are composed. The stream are immutable, i.e. cannot be changed.</p>
+
+Here is a small example:
+
+<code><pre>
+var input = document.getElementById('input');
+var input2 = document.getElementById('input2');
+var results = document.getElementById('results');
+
+Observable.fromEvent(input, 'keyup')
+  .merge(Observable.fromEvent(input2, 'keyup'))
+  .map(function(evt) {
+    return evt.target.value;
+  })
+  .map(function(str) {
+    results.value = str
+  });
+</pre></code>
+
+
+<p>Keyboard events/streams from two input fields are merged into one stream. This
+stream is then used to update a result field.</p>
+
+<p><a href='src/streams.html'>Here is an example</a> (make sure
+to show the developer console).</p>
+
+<h2>Compability</h2>
+
+The concept of observables and subscribers is extremely simple. It works in all
+browsers.
+
+<h2>Alternative solutions</h2>
+
+  <ul>
+    <li><a href='https://baconjs.github.io'>Bacon.js</a></li>
+  </ul>
+
+</div>
+</body>
+</hyml>
