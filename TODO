@@ -4,4 +4,4 @@ TODO
 * Load HTML, JS and CSS dynamically
 * IndexedDb and data binding
 * Custom Events
-
+* Promises
