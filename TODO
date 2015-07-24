@@ -5,3 +5,5 @@ TODO
 * IndexedDb and data binding
 * Custom Events
 * Promises
+* Gör om sidan till SinglePage, länka inom dokumentet med # (som gizur.com)
+* Fixa snygg CSS
