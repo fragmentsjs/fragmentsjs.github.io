@@ -1,0 +1,65 @@
+<html>
+<head>
+  <title>Fragments.js</title>
+  <meta name="description" content="JavaScript fragments/snippets for easy reuse"/>
+  <meta name="keywords" content="JavaScript, HTML5, webapps, web development"/>
+  <meta charset='utf-8' />
+  <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+<body>
+<div class='centered'>
+
+<p><a href='index.html'>Home</a></p>
+
+<h1>Testing</h1>
+
+<p>The main thing you need for testing is an <code>assert</code> function. This
+is one thing that EcmaScript lacks (for some strange reason). A simple assert
+function could look like this:</p>
+
+<code><pre>
+function assert(condition, message) {
+    if (!condition) {
+        message = message || "Assertion failed";
+        if (typeof Error !== "undefined") {
+            throw new Error(message);
+        }
+        throw message; // Fallback
+    }
+}
+</pre></code>
+
+<p>Some browsers support <code>
+<a href='https://developer.mozilla.org/en-US/docs/Web/API/console/assert'>
+console.assert</a></code> though.</p>
+
+<p>You often need to check more than just a simple boolean expression.
+Asserting that two objects are equal (by comparing their properties) is one
+example. A assertion library that I often use is
+<a href='http://chaijs.com'>chai</a>.</p>
+
+<p>The next thing to consider is test automation. I've done some research with
+<a href='http://casperjs.org'>CasperJS</a>,
+<a href='http://phantomjs.org'>PhantomJS</a> and
+<a href='https://www.npmjs.com/package/selenium-webdriver'>Selenium webdriver</a>.
+CasperJS, which is based on PhantomJS, and PhantomJS support headless testing
+and are newer than Selenium which been around for some time. Headless testing
+measns that you run the tests without a traditional browser which is handy when
+automating tests. My choice ended up on Selenium, CapserJS and PhantomJS did not
+have all the features that I needed when the scenarios become a bit more complex
+(using <code>iframes</code> etc). These tools provide support for end-to-end
+testing.</p>
+
+<p>Unit testing across many browsers is best done with
+<a href='http://karma-runner.github.io/0.13/index.html'>Karma</a>. Karma runs
+the tests in all major browsers. There is also support for services that runs
+the tests in many browsers for you, like
+<a href='https://saucelabs.com'>SauceLabs</a> (free for open source projects).
+There is also testing frameworks that helps you structure the tests.
+The two main competitors are <a href='http://jasmine.github.io'>Jasmine</a> and
+<a href='http://mochajs.org'>Mocha</a>. I've ended up using Mocha, but the
+choice is a matter of taste. Jasmine and Mocha are both supported by Karma.</p>
+
+</div>
+</body>
+</hyml>
