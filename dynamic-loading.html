@@ -1,0 +1,62 @@
+<html>
+<head>
+  <title>Fragments.js</title>
+  <meta name="description" content="JavaScript fragments/snippets for easy reuse"/>
+  <meta name="keywords" content="JavaScript, HTML5, webapps, web development"/>
+  <meta charset='utf-8' />
+  <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+<body>
+<div class='centered'>
+
+<p><a href='index.html'>Home</a></p>
+
+<h1>Load HTML, JavaScript and CSS dynamically</h1>
+
+
+<h2>Load CSS dynamically</h2>
+
+CSS is loaded by creating a <code>style</code> element and attaching it to the
+<code>head</code>. They way that <code>style</code> elements are attached to the
+head differs between browser but the code is fairly straight-forward.
+
+<p><a href='src/dyncss.html'>Here is an example</a> (make sure
+to show the developer console).</p>
+
+
+<h2>Load JavaScript dynamically</h2>
+
+Coming soon...
+
+
+<h2>Load HTML dynamically</h2>
+
+Loading HTML is actually trivilial. All you need to to is fetch the HTML with
+<code>XMLHttpRequest</code> and replace the <code>innerHTML</code> attribute of
+an element in the DOM.
+
+
+<h2>Compability</h2>
+
+These examples should work in all browsers. It took my quite a bit of testing
+to make the JavaScript loading work in both the Gecko (Firefox) and Blink/WebKit
+(Safari and Chrome).
+
+<h2>Alternative solutions</h2>
+
+<ul>
+  <li><a href='http://browserify.org'>Browserify</a>. I use browserify for
+  developing complex apps. It brings the NodeJS style of modules to browsers and
+  there is also a port of many of the NodeJS API.</li>
+
+  <li><a href='https://github.com/google/traceur-compiler'>ES6 modules today</a></li>
+
+  <li><a href='http://webpack.github.io'>webpack</a></li>
+
+  <li><a href='http://requirejs.org'>AMD</a>. Has been around for a long time
+  and works well but there are better alternatives today.</li>
+</ul>
+
+</div>
+</body>
+</hyml>
