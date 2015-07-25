@@ -34,6 +34,9 @@ to show the developer console).</p>
 
 <h2>Compability</h2>
 
+Extending <code>NodeList</code> and <code>NamedNodeMap</code> don't work in
+IE6/7/8. Just implement this with traditional loops instead.
+
 <ul>
   <li>Property <a href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects#Defining_getters_and_setters'>
   setters and gettes</a> are used. Works with IE9, Safari5, FF4, Chrome5 and

@@ -13,20 +13,27 @@
 
 <h1>Helper functions</h1>
 
+<p>I prefer to use the JavaScript features availble in modern browser over
+using different libraries. One thing still missing in JavaScript is
+<a href='https://promisesaplus.com'>Promises</a>. A good library that works
+in browsers (and also in NodeJS) is <a href='https://www.promisejs.org'>promisejs</a>
+by Forbes Lindesey.
+<a href='https://github.com/petkaantonov/bluebird'>Bluebird</a> claims to
+provide better performance but I'm sticking to promisejs for now.
 
-<p>Some helper functions I often end-up using.</p>
+<p>You should also have a look at <a href='https://www.npmjs.com/package/curry'>
+CurryJS</a> if you like to develop in the functional style.</p>
 
-<p><a href='src/helpers.js'>Here is the source</a></p>
-
-<h2>Compability</h2>
-
-<code>NodeList</code> and <code>NamedNodeMap</code> don't work in IE6/7/8.
+<p>Some helper functions I also often end-up using:
+<a href='src/helpers.js'>source</a></p>
 
 <h2>Alternative solutions</h2>
 
 <ul>
   <li><a href='http://underscorejs.org'>underscore</a> - a lot of these
   functions are now included in JavaScript</li>
+  <li><a href='https://lodash.com'>lodash</a> - a new contender, and drop-in
+  replacement, to underscore</li>
 </ul>
 
 </div>
