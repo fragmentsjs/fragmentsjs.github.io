@@ -2,20 +2,27 @@
 
 <body>
 
+  <input id='open_db' type='button' value='open_db' />
+  <input id='close_db' type='button' value='close_db' />
+  <input id='del_db' type='button' value='del_db' /><br/>
+
   <input id='nameId' value='Enter name' data-binding='name' />
   <br/>
   <input id='ageId' value='Enter age' data-binding='age' />
   <br/>
   <input id='genderId' value='Enter gender' data-binding='gender' />
-  <br/>
+  <br/><br/>
 
-  <input id='reset' type='button' value='reset' />
+  <input id='create_bucket' type='button' value='create_bucket' />
+  <input id='del_bucket' type='button' value='del_bucket' /><br/>
+
+  <input id='clear' type='button' value='clear' />
   <input id='print' type='button' value='print' />
-
   <input id='save' type='button' value='save' />
   <input id='load' type='button' value='load' />
-  <input id='del_bucket' type='button' value='del_bucket' />
-  <input id='del_db' type='button' value='del_db' />
+
+  <hr/> Remember to create a bucket (ObjectStore) before saving. Also
+  open the database before loading (if the page has been refreshed).
 
   <hr/> Open the console to see the details.
 
@@ -113,7 +120,7 @@
       self.checkForIndexDBSupport_();
     };
 
-    Db.prototype.keys_ = function () {
+    Db.prototype.keys = function () {
       var self = this;
       var res = [];
 
@@ -149,7 +156,7 @@
     // A reference to the object store is then created. This reference is
     // supplied to the function `storeOp`
     //
-    Db.prototype.execTrans_ = function (storeOp, mode, debugStr) {
+    Db.prototype.execTrans = function (storeOp, mode, debugStr) {
       var self = this;
 
       return new Promise(function (fulfill, reject) {
@@ -174,14 +181,14 @@
           };
 
           request.onerror = function (evt) {
-            self.logger_.log('execTrans_', debugStr, 'req onerror (' +
+            self.logger_.log('execTrans', debugStr, 'req onerror (' +
               self.version_ + ')', evt.target.error);
           };
         }
       });
     };
 
-    Db.prototype.createBucket_ = function () {
+    Db.prototype.createBucket = function () {
       var self = this;
       return new Promise(function (fulfill, reject) {
         var exists = self.idb_.objectStoreNames.contains(self.options_.bucketName);
@@ -192,7 +199,7 @@
       });
     };
 
-    Db.prototype.deleteBucket_ = function () {
+    Db.prototype.deleteBucket = function () {
       var self = this;
 
       return new Promise(function (fulfill, reject) {
@@ -205,16 +212,13 @@
       });
     };
 
-    Db.prototype.openIDB_ = function (debugStr, op) {
+    // op, upgradeDb, debugStr, key, value => op(key, value)
+    Db.prototype.openIDB = function (op, upgradeDb, debugStr) {
       var self = this;
 
-      if (!op) {
-        throw 'operation is mandatory';
-      }
-
-      // remove op and debugStr from arguments
+      // remove op, upgradeDb and debugStr from arguments
       var args = Array.prototype.slice.call(arguments);
-      args = args.slice(2, args.length);
+      args = args.slice(3, args.length);
 
       var open = function (upgrade) {
 
@@ -222,11 +226,11 @@
           var request;
 
           // make sure we've got this right
-          if (upgrade && self.version_ === null) {
+          if (upgrade && !self.version_) {
             reject('Internal error: must know version when upgrading');
           }
 
-          if (!upgrade && self.idb_ !== null) {
+          if (!upgrade && self.idb_) {
             return fulfill();
           }
 
@@ -243,7 +247,7 @@
           };
 
           request.onblocked = function (evt) {
-            console.log('openIDB_', debugStr,
+            console.log('openIDB', debugStr,
               'req onblocked: need to wait for som other operation to finish.');
           };
 
@@ -251,14 +255,13 @@
             self.idb_ = evt.target.result;
 
             self.idb_.onerror = function (evt) {
-              self.logger_.debug('openIDB_:idb', debugStr,
+              console.error('openIDB:idb', debugStr,
                 'an error occured', evt.target.error);
 
               reject(evt.target.error);
             };
 
-            if (self.version_ && (op === self.createBucket_ ||
-                op === self.deleteBucket_)) {
+            if (self.version_ && upgradeDb && op) {
               op.apply(self, args);
             }
           };
@@ -268,12 +271,12 @@
             self.version_ = self.idb_.version;
 
             self.idb_.onerror = function (evt) {
-              console.error('openIDB_:idb', debugStr,
+              console.error('openIDB:idb', debugStr,
                 'an error occured', evt.target.error);
             };
 
             self.idb_.onversionchange = function (evt) {
-              console.log('openIDB_', debugStr,
+              console.log('openIDB', debugStr,
                 'idb onversionchange:databse structure changed elsewhere');
             };
 
@@ -283,18 +286,20 @@
         });
       };
 
-      var upgrade = (op === self.createBucket_ || op === self.deleteBucket_);
-
-      if (upgrade && self.version_ === null) {
+      // Need to know the version in order to upgrade.
+      if (upgradeDb && !self.version_) {
         return open(false).then(function () {
           return open(true);
         });
       } else {
-        return open(upgrade).then(function () {
-          if (op !== self.createBucket_ && op !== self.deleteBucket_) {
-            return op.apply(self, args).then(function (res) {
+        return open(upgradeDb).then(function () {
+          // operation is performed in `onupgradeneeded` if an upgrade is
+          // requested and otherwise it is performed here (after the db is
+          // opened)
+          if (!upgradeDb) {
+            return (op) ? op.apply(self, args).then(function (res) {
               return res;
-            });
+            }) : null;
 
           }
         });
@@ -383,12 +388,12 @@
 
     document.addEventListener('DOMContentLoaded', function (e) {
       var obj = createUIObject(document.documentElement);
-      var reset = function () {
+      var clear = function () {
         obj.name = 'Enter name';
         obj.age = 'Enter age';
         obj.gender = 'Enter gender';
       };
-      document.getElementById('reset').addEventListener('click', reset);
+      document.getElementById('clear').addEventListener('click', clear);
       document.getElementById('print').addEventListener('click', function () {
         console.log(obj.name);
         console.log(obj.age);
@@ -400,16 +405,31 @@
         bucketName: 'bucket'
       });
 
-      db.openIDB_('createBucket_', db.createBucket_);
+      var openDb = function () {
+        db.openIDB(null, false, 'no operation');
+      };
+
+      var closeDb = function () {
+        db.close();
+      };
+
+      var delDb = function () {
+        db.deleteDb();
+      };
+
+      var createBucket = function () {
+        db.openIDB(db.createBucket, true, 'createBucket');
+      };
+
+      var delBucket = function () {
+        db.openIDB(db.deleteBucket, true, 'deleteBucket');
+      };
 
       var load = function () {
-        db.openIDB_('get',
-            function (key) {
-              return db.execTrans_(function (store) {
-                  return store.get(key)
-                },
-                'readonly', 'get');
-            }, 'test')
+        db.execTrans(function (store) {
+              return store.get('test')
+            },
+            'readonly', 'get')
           .then(function (res) {
             if (res) {
               obj = deepMerge(res, obj);
@@ -422,31 +442,24 @@
       };
 
       var save = function () {
-        db.openIDB_('put',
-            function (key, value) {
-              return db.execTrans_(function (store) {
-                  return store.put(value, key)
-                },
-                'readwrite', 'put');
+        db.execTrans(function (store) {
+              return store.put(obj, 'test')
             },
-            'test',
-            obj)
+            'readwrite', 'put')
           .catch(console.log.bind(console));
       };
 
-      var del_bucket = function () {
-        db.openIDB_('deleteBucket', db.deleteBucket_);
-      };
+      document.getElementById('open_db').addEventListener('click', openDb);
+      document.getElementById('del_db').addEventListener('click', delDb);
+      document.getElementById('close_db').addEventListener('click', closeDb);
 
-      var del_db = function () {
-        db.deleteDb();
-      };
+      document.getElementById('create_bucket').addEventListener('click',
+        createBucket);
+      document.getElementById('del_bucket').addEventListener('click',
+        delBucket);
 
       document.getElementById('load').addEventListener('click', load);
       document.getElementById('save').addEventListener('click', save);
-      document.getElementById('del_bucket').addEventListener('click',
-        del_bucket);
-      document.getElementById('del_db').addEventListener('click', del_db);
 
     });
   </script>

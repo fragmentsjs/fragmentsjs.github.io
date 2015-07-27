@@ -14,6 +14,7 @@
 
   <input id='save' type='button' value='save' />
   <input id='load' type='button' value='load' />
+  <input id='close_db' type='button' value='close_db' />
   <input id='del_bucket' type='button' value='del_bucket' />
   <input id='del_db' type='button' value='del_db' />
 
@@ -525,19 +526,24 @@
           .catch(console.log.bind(console));
       };
 
-      var del_bucket = function () {
+      var delBucket = function () {
         db.openIDB_('deleteBucket', db.deleteBucket_);
       };
 
-      var del_db = function () {
+      var delDb = function () {
         db.deleteDb();
+      };
+
+      var closeDb = function () {
+        db.close();
       };
 
       document.getElementById('load').addEventListener('click', load);
       document.getElementById('save').addEventListener('click', save);
       document.getElementById('del_bucket').addEventListener('click',
-        del_bucket);
-      document.getElementById('del_db').addEventListener('click', del_db);
+        delBucket);
+      document.getElementById('del_db').addEventListener('click', delDb);
+      document.getElementById('close_db').addEventListener('click', closeDb);
 
     });
   </script>
