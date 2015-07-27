@@ -1,0 +1,66 @@
+<html>
+<head>
+  <title>Fragments.js</title>
+  <meta name="description" content="JavaScript fragments/snippets for easy reuse"/>
+  <meta name="keywords" content="JavaScript, HTML5, webapps, web development"/>
+  <meta charset='utf-8' />
+  <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+<body>
+<div class='centered'>
+
+<p><a href='index.html'>Home</a></p>
+
+<h1>IndexedDb</h1>
+
+<p>The term "Mobile first" has become the accepted approach today.
+Luke Wroblevski was writing about this early on, check his
+<a href='http://www.lukew.com'>blog</a> for his writings. One of the main
+challenges when developing mobile apps is that the internet connection often
+isn't reliable. Local storage is therefore needed.</p>
+
+<p><a href='https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API'>IndexedDb</a>
+is emerging as the technology for local storage. Support isn't yet 100%
+(see below) but this is improving all the time. IndexedDb is a fairly
+comprehensive standard so it takes a little while to get used to. The examples
+below shows how it can be used and there is also a <code>Db</code> class that
+can re-used in your projects.</p>
+
+<p>IndexedDb fits well with the <code>fragmentsjs</code> data-bind technique.
+
+<ul>
+  <li><a href='src/indexeddb/index.html'>Here</a> is an example</li>
+
+  <li><a href='src/indexeddb/index-verbose.html'>This</a> example has extensive
+  logging which makes it easy to see how IndexedDb works.</li>
+</ul>
+
+</p>
+
+<h2>Compability/Alternative solutions</h2>
+
+Support for IndexedDb is coming in all major
+<a href='http://caniuse.com/#search=indexeddb'>browsers</a> but iOS is known for
+being buggy and some features are currently (July 2015) missing in some browsers.
+There is an <a href='https://github.com/axemclion/IndexedDBShim'>IndexedDBShim</a>
+that can be used in browsers lacking full support. This shim uses WebSQL instead of
+IndexedDb when IndexedDb is missing. Make sure to read
+<a href='https://github.com/axemclion/IndexedDBShim/issues/167'>this issue</a>
+before using the shim though.
+
+<p><code>
+<a href='https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage'>localStorage</a>
+</code> and
+<code><a href='https://developer.apple.com/library/safari/documentation/iPhone/Conceptual/SafariJSDatabaseGuide/UsingtheJavascriptDatabase/UsingtheJavascriptDatabase.html'>
+WebSQL</a></code> are the other technologies
+used for offline storage. <code>localStorage</code> is a simple key/value store
+and is supported by almost all
+<a href='http://caniuse.com/#search=localstorage'>browsers</a>.
+
+<code>WebSQL</code> is supported by webKit/Blink (Safari, Chrome, Opera) but
+not by Gecko (FF) and Trident (IE), see
+<a href='http://caniuse.com/#feat=sql-storage'>caniuse</a> for the details.</p>
+
+</div>
+</body>
+</hyml>
