@@ -1,3 +1,5 @@
+// fragmentsjs.github.io, Copyright 2015 Jonas Colmsjö, ISC license 
+
 // workaround since NodeList do not inherit Array (not for IE6/7/8)
 NodeList.prototype.forEach = Array.prototype.forEach;
 NamedNodeMap.prototype.forEach = Array.prototype.forEach;
