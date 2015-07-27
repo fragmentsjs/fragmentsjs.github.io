@@ -102,6 +102,10 @@
     Db = function (options) {
       var self = this;
 
+      // can use more advanced logger if necessary (for instance Helpers.log)
+      self.logger_ = console;
+      self.logger_.debug('Constructor.');
+
       if (!options.dbName || !options.bucketName) {
         throw 'Db.constructor: database name and bucket name is mandatory.'
       }
@@ -118,22 +122,34 @@
       var res = [];
 
       return new Promise(function (fulfill, reject) {
+        self.logger_.debug('keys_: (' + self.version_ + ')');
+
         var trans = self.idb_.transaction(self.options_.bucketName, 'readonly');
 
         trans.oncomplete = function (evt) {
+          self.logger_.debug('keys_:oncomplete (' + self.version_ + ')');
           fulfill(res);
         };
 
         trans.onerror = function (err) {
+          self.logger_.log('keys_:onerror:', err.target.error,
+            ' (' + self.version_ + ')');
           reject(err.target.error);
         };
 
         var store = trans.objectStore(self.options_.bucketName);
         var request = store.openCursor();
 
+        // wait until trans.oncomplete before fulfilling??
         request.onsuccess = function (evt) {
           var cursor = evt.target.result;
+
           if (cursor) {
+            self.logger_.debug('keys_:onsuccess (' + self.version_ +
+              ') direction=' + cursor.direction +
+              ', primaryKey=' + cursor.primaryKey +
+              ', key=' + cursor.key);
+
             res.push(cursor.primaryKey);
             cursor.continue();
           } else {
@@ -154,13 +170,19 @@
 
       return new Promise(function (fulfill, reject) {
         var res = null;
+        self.logger_.debug('execTrans_', debugStr + ' (' + self.version_ + ')');
+
         var trans = self.idb_.transaction(self.options_.bucketName, mode);
 
         trans.oncomplete = function (evt) {
+          self.logger_.debug('execTrans_', debugStr, 'trans oncomplete (' +
+            self.version_ + ') ');
           fulfill(res);
         };
 
         trans.onerror = function (err) {
+          self.logger_.log('execTrans_', debugStr, 'trans onerror:',
+            err.target.error, ' (' + self.version_ + ')');
           reject(err.target.error);
         };
 
@@ -170,7 +192,10 @@
         if (request) {
           // wait until trans.oncomplete before fulfilling
           request.onsuccess = function (evt) {
+            // get operations save the result in request.result
             res = (request.result) ? request.result : null;
+            self.logger_.debug('execTrans_', debugStr, 'req onsuccess (' +
+              self.version_ + ')');
           };
 
           request.onerror = function (evt) {
@@ -184,8 +209,16 @@
     Db.prototype.createBucket_ = function () {
       var self = this;
       return new Promise(function (fulfill, reject) {
+        self.logger_.debug('createBucket_', self.options_.bucketName);
         var exists = self.idb_.objectStoreNames.contains(self.options_.bucketName);
-        if (!exists) {
+        self.logger_.debug('createBucket_:exists=' + exists);
+
+        if (exists) {
+          self.logger_.debug('createBucket_', self.options_.bucketName +
+            ' exists, will not create');
+        } else {
+          self.logger_.log('createBucket_', self.options_.bucketName +
+            ' does not exist. Creating ' + '(' + self.version_ + ')');
           self.idb_.createObjectStore(self.options_.bucketName);
         }
         fulfill();
@@ -196,10 +229,18 @@
       var self = this;
 
       return new Promise(function (fulfill, reject) {
+        self.logger_.debug('deleteBucket_', self.options_.bucketName);
         var exists = self.idb_.objectStoreNames.contains(self.options_.bucketName);
+        self.logger_.debug('deleteBucket_:exists=' + exists);
 
         if (exists) {
+          self.logger_.debug('deleteBucket_', self.options_.bucketName +
+            ' exists. Deleting. ' + '(' + self.version_ + ')');
+
           self.idb_.deleteObjectStore(self.options_.bucketName);
+        } else {
+          self.logger_.log('deleteBucket_', self.options_.bucketName +
+            ' does not exist. Cannot delete. ' + '(' + self.version_ + ')');
         }
         fulfill();
       });
@@ -219,37 +260,62 @@
       var open = function (upgrade) {
 
         return new Promise(function (fulfill, reject) {
-          var request;
 
           // make sure we've got this right
           if (upgrade && self.version_ === null) {
             reject('Internal error: must know version when upgrading');
           }
 
+          self.logger_.debug('openIDB_', debugStr, ' with upgrade=' + upgrade);
+
+          // no need to open indexeddb if its already open and upgrade not
+          // needed
           if (!upgrade && self.idb_ !== null) {
             return fulfill();
           }
 
+          // Make sure we're closed if we're going to upgrade. Database is
+          // closed in a separate thread. No new oparations can be done
           if (upgrade) {
             self.close();
+          }
+
+          // Let the event queue get empty after closing IndexedDB
+          // (should be the same as setImmidiate)
+          var request;
+
+          if (upgrade) {
+            self.logger_.debug('openIDB_', self.options_.dbName,
+              'about to open with version=' + (self.version_ + 1));
             request = window.indexedDB.open(self.options_.dbName,
               ++self.version_);
           } else {
+            self.logger_.debug('openIDB_', self.options_.dbName,
+              'about to open without version specified');
             request = window.indexedDB.open(self.options_.dbName);
           }
 
           request.onerror = function (evt) {
+            self.logger_.debug('openIDB_:req', debugStr,
+              'an error occured', evt.target.error);
+
             reject(evt.target.error);
           };
 
           request.onblocked = function (evt) {
-            console.log('openIDB_', debugStr,
+            self.logger_.debug('openIDB_', debugStr,
               'req onblocked: need to wait for som other operation to finish.');
           };
 
+          // We can only create Object stores in a versionchange transaction.
           request.onupgradeneeded = function (evt) {
+            self.logger_.debug('openIDB_', debugStr,
+              'req onupgradeneeded (' + self.version_ + ')');
+
+            // Save a reference to the database
             self.idb_ = evt.target.result;
 
+            // Set an all error handler
             self.idb_.onerror = function (evt) {
               self.logger_.debug('openIDB_:idb', debugStr,
                 'an error occured', evt.target.error);
@@ -257,6 +323,7 @@
               reject(evt.target.error);
             };
 
+            // create/deleteBucket must be done here
             if (self.version_ && (op === self.createBucket_ ||
                 op === self.deleteBucket_)) {
               op.apply(self, args);
@@ -264,16 +331,19 @@
           };
 
           request.onsuccess = function (evt) {
+            self.logger_.debug('openIDB_', debugStr,
+              'req onsuccess (' + self.version_ + ')');
+
             self.idb_ = evt.target.result;
             self.version_ = self.idb_.version;
 
             self.idb_.onerror = function (evt) {
-              console.error('openIDB_:idb', debugStr,
+              self.logger_.debug('openIDB_:idb', debugStr,
                 'an error occured', evt.target.error);
             };
 
             self.idb_.onversionchange = function (evt) {
-              console.log('openIDB_', debugStr,
+              self.logger_.debug('openIDB_', debugStr,
                 'idb onversionchange:databse structure changed elsewhere');
             };
 
@@ -283,22 +353,34 @@
         });
       };
 
+      // These operations require that the version is increased
       var upgrade = (op === self.createBucket_ || op === self.deleteBucket_);
 
+      // we must know the version when upgrading
       if (upgrade && self.version_ === null) {
+        self.logger_.debug('openIDB_', debugStr,
+          'Need to upgrade, must fetch the version first.')
+
         return open(false).then(function () {
           return open(true);
         });
       } else {
+        self.logger_.debug('openIDB_', debugStr);
+
         return open(upgrade).then(function () {
           if (op !== self.createBucket_ && op !== self.deleteBucket_) {
+            self.logger_.debug('openIDB_:IDB opened, performing operation ' +
+              debugStr);
             return op.apply(self, args).then(function (res) {
+              self.logger_.debug('openIDB_:IDB:after operation ' +
+                debugStr);
               return res;
             });
 
           }
         });
       }
+
     };
 
     // closing the IndexedDB is performed in a separate thread in the browser
@@ -307,6 +389,9 @@
     Db.prototype.close = function () {
       var self = this;
 
+      self.logger_.debug('close');
+
+      // cannot close if indexeddb isn't open
       if (self.idb_ === null) {
         return;
       }
@@ -315,6 +400,7 @@
       self.idb_ = null;
     };
 
+    // Make sure that IndexedDB is supported. Throw error otherwise
     Db.prototype.checkForIndexDBSupport_ = function () {
       var self = this;
 
@@ -343,7 +429,7 @@
         }
       }
 
-      console.log('checkForIndexDBSupport:IndexedDB support:' +
+      self.logger_.debug('checkForIndexDBSupport:IndexedDB support:' +
         self.idbSupport_);
 
       if (self.idbSupport_ === 'NOT_SUPPORTED') {
@@ -358,23 +444,30 @@
       var self = this;
 
       return new Promise(function (fulfill, reject) {
+        self.logger_.debug('deleteDB:Will delete whole IndexedDB with name=' +
+          self.options_.dbName);
+
         var request = window.indexedDB.deleteDatabase(self.options_.dbName);
 
         request.onerror = function (evt) {
+          self.logger_.log('deleteDB:ERROR deleteing ' + self.options_.dbName,
+            evt.target.error);
           reject(evt.target.error);
         };
 
         request.onsuccess = function (evt) {
+          self.logger_.log('deleteDB:onsuccess deleting ' +
+            self.options_.dbName);
           fulfill();
 
           request.onblocked = function (evt) {
-            console.log('deleteDb:onblocked: need to wait for some' +
+            self.logger_.debug('deleteDb:onblocked: need to wait for some' +
               ' other operation to finish.');
           };
 
           // We can only create Object stores in a versionchange transaction.
           request.onupgradeneeded = function (evt) {
-            console.log('deleteDb:onupgradeneeded:should this happen?');
+            self.logger_.debug('deleteDb:onupgradeneeded:shoudl this happen?');
           };
 
         };
@@ -390,9 +483,7 @@
       };
       document.getElementById('reset').addEventListener('click', reset);
       document.getElementById('print').addEventListener('click', function () {
-        console.log(obj.name);
-        console.log(obj.age);
-        console.log(obj.gender);
+        console.log(obj);
       });
 
       var db = new Db({
