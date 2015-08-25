@@ -1,0 +1,70 @@
+<html>
+<head>
+  <title>Fragments.js</title>
+  <meta name="description" content="JavaScript fragments/snippets for easy reuse"/>
+  <meta name="keywords" content="JavaScript, HTML5, webapps, web development"/>
+  <meta charset='utf-8' />
+  <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+<body>
+<div class='centered'>
+
+<p><a href='index.html'>Home</a></p>
+
+<h1>Touch events</h1>
+
+<p>Touch screen have a 300ms delay for the click event. This makes web apps
+feel slow. This can be avoided using touch events instead. See example below.</p>
+
+<pre>
+  <code>
+    var getParentHash = function (el) {
+      if (!el) return null;
+      return (el.hash) ? el.hash : getParentHash(el.parentElement);
+    };
+
+    var getParentHref = function (el) {
+      if (!el) return null;
+      return (el.href) ? el.href : getParentHref(el.parentElement);
+    };
+
+    // avoid 300ms delay for touch screens
+    var tap = function(evt) {
+      // prevent click from happening
+      evt.preventDefault();
+
+      // an element inside an anchor might have been tapped
+      var hash = getParentHash(evt.target);
+      var href = getParentHref(evt.target);
+
+      // perform the desired action, i.e. show a screen etc.
+      history.pushState(null, null, hash);
+      show(href);
+    };
+
+    // register the touchstart event
+    var list = document.querySelectorAll('.menu-button');
+    Array.prototype.forEach.call(list, function(el) {
+      console.log(el);
+      el.addEventListener('touchstart', tap, false);
+    });
+  </code>
+</pre>
+
+
+<h2>Compability</h2>
+
+All mobile browsers suport touch events. Chrome and Firefiox also support it
+on desktops.
+
+
+<h2>Recommended reading</h2>
+
+  <ul>
+    <li><a href='http://www.html5rocks.com/en/mobile/touchandmouse/'>html5rocks</a></li>
+    <li><a href='https://developer.mozilla.org/en-US/docs/Web/API/Touch_events'>Mozilla</a></li>
+  </ul>
+
+</div>
+</body>
+</hyml>
