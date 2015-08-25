@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=500, initial-scale=1">
+  <meta charset="utf-8">
+</head>
+
+<body>
+
+  <div class="container">
+    <div id="header">
+    </div>
+    <div id="content">
+    </div>
+  </div>
+
+  <div id='templates' style="visibility: hidden">
+    <div id="headerContent">
+      <div class="row">
+        <div class="col-xs-12">
+          <h1>Gå med i min fantastiska tjänst</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>Fixar allt</h2>
+        </div>
+      </div>
+    </div>
+
+    <div id="welcomeScreen">
+      <div class="row">
+        <div class="col-xs-12">
+          <br/>
+          </a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <a href="#">
+            Registrera med Facebook
+          </a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <br/>
+          </a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <a href="#register" class="btn btn-primary" role="button">Manuell registrering</a>
+        </div>
+      </div>
+    </div>
+    <!-- /welcomeScreen -->
+
+    <div id="registerScreen">
+      <div class="row">
+        <div class="col-xs-12">
+          <h2>Registrering</h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <label for="intputFirstName" class="sr-only">Förnamn</label>
+          <input type="text" id="intputFirstName" class="form-control" placeholder="Förnamn" required autofocus>
+
+          <label for="inputLastName" class="sr-only">Efternamn</label>
+          <input type="text" id="inputLastName" class="form-control" placeholder="Efternamn" required>
+
+          <label for="inputEmail" class="sr-only">E-mail</label>
+          <input type="email" id="inputEmail" class="form-control" placeholder="E-mail" required>
+
+          <label for="inputBirthday" class="sr-only">Födelsedag</label>
+          <input type="date" id="inputBirthday" class="form-control" placeholder="Födelsedag" required>
+
+          <br/>
+          <a href="#XXX" class="btn btn-primary" role="button">Nästa steg</a>
+
+        </div>
+      </div>
+    </div>
+    <!-- /registerScreen -->
+
+  </div>
+
+
+
+  <script>
+    var show = function (newURL, oldURL) {
+      document.getElementById('templates').appendChild(
+        document.getElementById('content').firstChild);
+
+      document.getElementById('content').appendChild(
+        document.getElementById(getHash(newURL).slice(1) + 'Screen'));
+
+    }
+
+    var route = function (evt) {
+      show(evt.newURL, evt.oldURL);
+    };
+
+    var getHash = function (url) {
+      var parser = document.createElement('a');
+      parser.href = url;
+      return parser.hash;
+    };
+
+    // use this if you need to parse the query/search string
+    var parseQueryString = function (str) {
+      return str.substring(1).split('&')
+        .map(function (s) {
+          return s.split('=');
+        })
+        .reduce(function (r, x) {
+          r[x[0]] = x[1];
+          return r;
+        }, {});
+    };
+
+    window.addEventListener('DOMContentLoaded', function (evt) {
+      window.addEventListener('hashchange', route, false);
+
+      history.pushState(null, null, '#welcome');
+      show(window.location.href);
+      document.getElementById('header').innerHTML = document.getElementById('headerContent').innerHTML;
+
+    });
+  </script>
+
+</body>
+
+</html>
