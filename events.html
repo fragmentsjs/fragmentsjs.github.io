@@ -13,13 +13,24 @@
 
     <p><a href='index.html'>Home</a></p>
 
-    <h1>Events</h1>
+    <h1>Events and dispatchers (like Facebook Flux)</h1>
 
     <p>Events are used to observe the behaviour of the user, e.g. clicks, keyboard input etc. They can also be used to communicate between different JavaScript Objects. Here is an example of how events can be used:
       <a href='src/customevents/index.html'>Custom Events</a>
-
     </p>
 
+    <p>NOTE:
+      I must admit that I was hoping that `Object.observe` would become widespread. This will not happen since it now has been <a href='https://esdiscuss.org/topic/an-update-on-object-observe'>withdrawn</a>.
+    </p>
+
+    <p><a href='https://facebook.github.io/flux/'>Flux</a> from Facebook is a nice approach for propagating
+    information. It is a kind of pub/sub but all subcribers receive all events. There is also a mechanism
+      for one subscriber to wait for others subscribers to process the event first. Implementing a dispatcher
+      is relatively simple, <a href='./src/dispatch/testLight.html'>here</a> is a example. And 
+      <a href='./src/dispatch/test.html'>here</a> is another example where is also is possible to wait 
+      for other subscribers.
+    </p>
+    
   </div>
 </body>
 

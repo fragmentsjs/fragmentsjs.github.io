@@ -1,0 +1,59 @@
+<html>
+
+<body>
+
+  <h1>Open the console</h1>
+
+  <script src='./dispatch.js'></script>
+  <script>
+    var debug = console.log.bind(console, 'DEBUG');
+    var flightDispatcher = new window['dispatch']();
+
+    var CountryStore = {
+      country: null
+    };
+
+    var CityStore = {
+      city: null
+    };
+
+    flightDispatcher.register(function(payload) {
+      if (payload.actionType === 'city-update') {
+        debug('CityStore', payload);
+        CityStore.city = payload.selectedCity;
+      }
+    });
+
+    flightDispatcher.register(function(payload) {
+      if (payload.actionType === 'country-update') {
+
+        // `CountryStore.country` may not be updated.
+        flightDispatcher.waitFor([CountryStore.dispatchToken]);
+        // `CountryStore.country` is now guaranteed to be updated.
+
+        debug('CountryStore is now updated', payload);
+      }
+    });
+
+    CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
+      if (payload.actionType === 'country-update') {
+        debug('CountryStore.country', payload);
+        CountryStore.country = payload.selectedCountry;
+      }
+    });
+
+    flightDispatcher.dispatch({
+      actionType: 'city-update',
+      selectedCity: 'paris'
+    });
+
+    flightDispatcher.dispatch({
+      actionType: 'country-update',
+      selectedCountry: 'france'
+    });
+
+  </script>
+
+</body>
+
+</html>
