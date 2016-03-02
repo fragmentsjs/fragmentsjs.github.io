@@ -1,3 +1,7 @@
+//
+// from Facebooks Flux: https://github.com/facebook/flux/blob/master/src/Dispatcher.js
+// 
+
 (function () {
   'use strict';
 
