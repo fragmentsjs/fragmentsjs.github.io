@@ -1,0 +1,96 @@
+<html>
+
+<head>
+  <title>Fragments.js</title>
+  <meta name="description" content="JavaScript fragments/snippets for easy reuse" />
+  <meta name="keywords" content="JavaScript, HTML5, webapps, web development" />
+  <meta charset='utf-8' />
+  <link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+
+<body>
+  <div class='centered'>
+
+    <p><a href='index.html'>Home</a></p>
+
+    <h1>Cordova</h1>
+
+    <h2>Logging</h2>
+    
+    <p>The JavaScript console is not always easy to access when developing in Cordova. The console
+      is available in Safari when developing for iOS but it can't be opened until **after** the simulator
+      has been started. The whole initialization is therefore missed. The plugin that is available does not
+      always works.
+    </p>
+    
+    <p>The simplest solution to provide logging is to override the console functions for logging.
+    The fragment below shows how this can be done. It also logs to a remote server which is handy since
+    the device screen often is to small for reading long log outputs.</p>
+
+
+    <p>The fragment below is inteded to be used with 
+      <a href="https://www.npmjs.com/package/simple-logserver">simple-logserver</a></p>
+    
+    <code>
+
+      // Make sure to update Content-Security-Policy in index.html if this is changed       
+      var LOG_SERVER = 'http://localhost:8126';
+
+      // convert arguments to a string
+      var serialize = function () {
+        var args = Array.prototype.slice.call(arguments);
+        var msg = '';
+        args.forEach(function (arg) {
+          if (typeof arg === 'object') msg += JSON.stringify(arg);
+          else msg += arg;
+        });
+
+        return msg;
+      };
+
+      var addLogDiv = function () {
+        var div = document.createElement("div");
+        div.id = 'log';
+        document.body.appendChild(div);
+      };
+
+      // manage a div used for logging
+      var logInDiv = function () {
+        var msg = serialize(arguments);
+
+        if (document.getElementById('log') && document.getElementById('log').childElementCount > 30)
+          document.body.removeChild(document.getElementById('log'));
+
+        if (!document.getElementById('log')) addLogDiv();
+
+        document.getElementById('log').innerHTML += msg + '<br/>';
+      };
+
+      var logRemote = function () {
+        var msg = serialize(arguments);
+
+        var req = new XMLHttpRequest();
+        req.open('POST', LOG_SERVER);
+        req.send(msg);
+      };
+
+      // Logging both in the app and on the remote server
+      var log = function () {
+        logInDiv(arguments);
+        logRemote(arguments);
+      };
+
+      console.log = log;
+      console.info = log;
+      console.error = log;
+
+      window.onerror = log;
+      window.logRemote = logRemote;
+    </code>
+  
+    Also availavle <a href='src/cordova/logging.js'>here</a> for downloading.
+    
+  </div>
+</body>
+
+</html>
