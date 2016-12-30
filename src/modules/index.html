@@ -8,6 +8,17 @@
     var log = console.log.bind(console, 'LOG');
     var debug = console.log.bind(console, 'DEBUG');
 
+    // remove all content but keep the scripts
+    var clearBody = function() {
+      var i=0;
+      while(document.body.childNodes.length !== i) {
+        if(document.body.childNodes[i].nodeName &&
+          document.body.childNodes[i].nodeName === 'SCRIPT') i++;
+        else
+          document.body.removeChild(document.body.childNodes[i]);
+      }
+    };
+
     var load = function(url, cb) {
       // progress on transfers from the server to the client (downloads)
       function updateProgress (oEvent) {
@@ -96,6 +107,7 @@
     };
 
     var loadModule = function (moduleName, id) {
+      clearBody();
       loadHTML(moduleName+'.html', id, function(){
         loadScript(moduleName+'.js', id, null);
       });
