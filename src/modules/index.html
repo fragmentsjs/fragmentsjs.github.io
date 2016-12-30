@@ -1,0 +1,119 @@
+<html>
+  <body>
+    <button id='loadModule'>Load module</button>
+    <button id='loadPage'>Load page</button>
+    <button id='loadScript'>Load script</button>
+
+  <script>
+    var log = console.log.bind(console, 'LOG');
+    var debug = console.log.bind(console, 'DEBUG');
+
+    var load = function(url, cb) {
+      // progress on transfers from the server to the client (downloads)
+      function updateProgress (oEvent) {
+        if (oEvent.lengthComputable) {
+          log('Loaded: ', oEvent.loaded / oEvent.total);
+        } else {
+          log('Unable to compute progress information since the total size is unknown');
+        }
+      }
+
+      function transferComplete(evt) {
+        log("The transfer is complete.", evt);
+        if(cb) cb(evt.target.responseText, evt);
+      }
+
+      function transferFailed(evt) {
+        log("An error occurred while transferring the file.");
+        if(cb) cb(false, evt);
+      }
+
+      function transferCanceled(evt) {
+        log("The transfer has been canceled by the user.");
+        if(cb) cb(false, evt);
+      }
+
+      var oReq = new XMLHttpRequest();
+
+      oReq.addEventListener("progress", updateProgress);
+      oReq.addEventListener("load", transferComplete);
+      oReq.addEventListener("error", transferFailed);
+      oReq.addEventListener("abort", transferCanceled);
+
+      oReq.open("GET", url);
+      oReq.send();
+    };
+
+    var loadHTML = function(url, id, cb) {
+      if(id && document.getElementById(id)) {
+        log("Can't load HTML. Id already exists: " + id);
+        return;
+      }
+
+      var addDiv = function (data) {
+        var el = document.createElement('div');
+        if (id) el.id = id;
+        el.innerHTML = data;
+        document.body.appendChild(el);
+
+        if(cb) cb();
+      };
+
+      load(url, addDiv);
+    };
+
+    // This will create a script tag with the code in `data`
+    // `head` makes it possible to load scripts within `iframes`
+    var loadScript = function (url, id, cb) {
+      debug('loadScript:' + id);
+
+      function addScript(data) {
+        // generated id for script
+        id = (id !== undefined && id !== null) ? '$$' + id + '$$' : null;
+
+        // check if script is loaded
+        if (id !== undefined && document.getElementById(id) !== null) {
+          log("Can't load script. Id already exists: " + id);
+          return;
+        }
+
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.defer = true;
+        script.async = false;
+        script.text = data;
+
+        if (id !== null) {
+          script.id = id;
+        }
+
+        head.appendChild(script);
+
+        if(cb) cb();
+      };
+
+      load(url, addScript);
+    };
+
+    var loadModule = function (moduleName, id) {
+      loadHTML(moduleName+'.html', id, function(){
+        loadScript(moduleName+'.js', id, null);
+      });
+    };
+
+    //
+    // Main
+    // =====
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+      log("DOM fully loaded and parsed");
+
+      document.getElementById('loadModule').addEventListener('click', loadModule.bind(this, 'page', 1, null));
+      document.getElementById('loadPage').addEventListener('click', loadHTML.bind(this, 'page.html', 1, null));
+      document.getElementById('loadScript').addEventListener('click', loadScript.bind(this, 'page.js', 1, null));
+    });
+
+  </script>
+  </body>
+
+</html>
